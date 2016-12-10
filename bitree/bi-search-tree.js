@@ -61,7 +61,9 @@ function del(node) {
         node.value = successor.value;
     }
 }
-
+/*
+ *  获取以node为根节点的值最小的子节点
+ */
 function getMin(node) {
     if (!node) return null;
     var x = null,
@@ -72,7 +74,13 @@ function getMin(node) {
     }
     return x;
 }
-
+/*
+ *  获取node的后继节点
+ * 
+ *  分两种情况：
+ *    1.如果node有右子树，则返回右子树的最小节点；
+ *    2.如果node没有右子树，则其后继节点为最低父节点，并且node所在子树为该父节点的左子树；
+ */
 function getSuccessor(node) {
     if (!node) return null;
 
