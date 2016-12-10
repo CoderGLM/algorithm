@@ -11,15 +11,15 @@ function insert(root, value) {
         return root
     }
     var x = root,
-        y = null
+        y = null;
     do {
-        y = x
-        x = value < y.value ? y.left : y.right
-    } while (x)
+        y = x;
+        x = value < y.value ? y.left : y.right;
+    } while (x);
 
-    var node = new Node(null, null, value, y)
-    if (value < y.value) y.left = node
-    else y.right = node
+    var node = new Node(null, null, value, y);
+    if (value < y.value) y.left = node;
+    else y.right = node;
     return root;
 }
 
@@ -31,10 +31,11 @@ function midTraverse(node) {
     }
 }
 
-var arr = [2, 3, 8, 9, 10, 1, 11, 28, 19, 41, 32]
-var root = null
+// 构建二叉查找树
+var arr = [2, 3, 8, 9, 10, 1, 11, 28, 19, 41, 32];
+var root = null;
 arr.forEach(function(item, index) {
-    root = insert(root, item)
-})
-
-midTraverse(root)
+    root = insert(root, item);
+});
+// 中序遍历
+midTraverse(root);
