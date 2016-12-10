@@ -26,6 +26,42 @@ function insert(root, value, nodes) {
     return root;
 }
 
+function del(node) {
+    if (!node) return;
+    if (!node.left && !node.right) {
+        console.log('case1');
+        if (node.parent.left === node) {
+            node.parent.left = null;
+        } else {
+            node.parent.right = null;
+        }
+    } else if (!node.left || !node.right) {
+        console.log('case2');
+        if (node.left) {
+            console.log('case2.1');
+            node.left.parent = node.parent;
+            if (node.parent.left === node) {
+                node.parent.left = node.left;
+            } else {
+                node.parent.right = node.left;
+            }
+        } else {
+            console.log('case2.2');
+            node.right.parent = node.parent;
+            if (node.parent.left === node) {
+                node.parent.left = node.right;
+            } else {
+                node.parent.right = node.right;
+            }
+        }
+    } else {
+        console.log('case3');
+        var successor = getSuccessor(node);
+        del(successor);
+        node.value = successor.value;
+    }
+}
+
 function getMin(node) {
     if (!node) return null;
     var x = null,
