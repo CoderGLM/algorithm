@@ -1,48 +1,40 @@
-function left (node) {
-  return node.left
+function Node(l, r, v, p) {
+    this.parent = p || null
+    this.left = l || null
+    this.right = r || null
+    this.value = v || null
 }
 
-function right (node) {
-  return node.right
-}
-
-function parent (node) {
-  return node.parent
-}
-
-function key (node) {
-  return node.value
-}
-
-function Node () {
-  this.parent = null
-  this.left = null
-  this.right = null
-  this.value = NaN
-}
-
-function insert (root, value) {
-  if (!root) {
-    root = new Node()
-    root.value = value
-    return root
-  }
-  var y = root,
-      x = null
-  do {
-    x = y
-    if (value < key(x)) {
-      y = left(x)
-    } else {
-      y = right(x)
+function insert(root, value) {
+    if (!root) {
+        root = new Node(null, null, value, null)
+        return root
     }
-  } while (y)
+    var x = root,
+        y = null
+    do {
+        y = x
+        x = value < y.value ? y.left : y.right
+    } while (x)
 
-  if (value < key(x)) {
-    x.left = new Node()
-    x.left.value = value
-  } else {
-    x.right = new Node()
-    x.right.value = value
-  }
+    var node = new Node(null, null, value, y)
+    if (value < y.value) y.left = node
+    else y.right = node
+    return root;
 }
+
+function midTraverse(node) {
+    if (node) {
+        midTraverse(node.left)
+        console.log(node.value)
+        midTraverse(node.right)
+    }
+}
+
+var arr = [2, 3, 8, 9, 10, 1, 11, 28, 19, 41, 32]
+var root = null
+arr.forEach(function(item, index) {
+    root = insert(root, item)
+})
+
+midTraverse(root)
