@@ -74,8 +74,10 @@ function TREE_DELETE1(node) {
         }
     } else {
         console.log('case3');
+        console.log(ROOT);
         var successor = TREE_SUCCESSOR(node);
-        TREE_DELETE(successor);
+        TREE_DELETE1(successor);
+        console.log(ROOT);
         node.value = successor.value;
     }
 }
@@ -102,7 +104,7 @@ function TREE_DELETE(node) {
     if (x) {
         x.parent = y.parent;
     }
-    if (y.parent) {
+    if (!y.parent) {
         ROOT = x;
     } else {
         if (y.parent.left === y) {
@@ -168,11 +170,10 @@ arr.forEach(function(item, index) {
 });
 // 中序遍历
 midTraverse(ROOT);
-console.log('-------------------')
-console.log(ROOT)
+console.log('-------------------');
 
 // console.log(TREE_SUCCESSOR(nodes[19]).value)
 
-TREE_DELETE1(nodes[7]);
+TREE_DELETE(nodes[7]);
 
 midTraverse(ROOT);
