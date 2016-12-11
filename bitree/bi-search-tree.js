@@ -1,3 +1,5 @@
+import treeHeight from '../util/treeHeight';
+
 var ROOT; // 根节点
 
 function Node(l, r, v, p) {
@@ -168,12 +170,14 @@ var nodes = [];
 arr.forEach(function(item, index) {
     TREE_INSERT(item, nodes);
 });
+
 // 中序遍历
 midTraverse(ROOT);
 console.log('-------------------');
 
 // console.log(TREE_SUCCESSOR(nodes[19]).value)
 
-TREE_DELETE(nodes[7]);
+// TREE_DELETE(nodes[3]);
+// midTraverse(ROOT);
 
-midTraverse(ROOT);
+// console.log(treeHeight(ROOT));
