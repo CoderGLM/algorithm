@@ -1,4 +1,5 @@
-import treeHeight from '../util/treeHeight';
+import { TREE_SUCCESSOR, TREE_MINIMUM } from '../util/search';
+import { TREE_INORDER } from '../util/traverse';
 
 var ROOT; // 根节点
 
@@ -121,48 +122,6 @@ function TREE_DELETE(node) {
     }
     return y;
 }
-/*
- *  获取以node为根节点的值最小的子节点
- */
-function TREE_MINIMUM(node) {
-    if (!node) return null;
-    var x = node;
-    while (x.left) {
-        x = x.left;
-    }
-    return x;
-}
-/*
- *  获取node的后继节点
- * 
- *  分两种情况：
- *    1.如果node有右子树，则返回右子树的最小节点；
- *    2.如果node没有右子树，则其后继节点为最低父节点，并且node所在子树为该父节点的左子树；
- */
-function TREE_SUCCESSOR(node) {
-    if (!node) return null;
-
-    if (node.right) {
-        return TREE_MINIMUM(node);
-    }
-    var x = node,
-        y = node.parent;
-    while (y && x === y.right) {
-        x = y;
-        y = x.parent;
-    }
-    return node;
-}
-/*
- *  中序遍历
- */
-function midTraverse(node) {
-    if (node) {
-        midTraverse(node.left)
-        console.log(node.value)
-        midTraverse(node.right)
-    }
-}
 
 // 构建二叉查找树
 var arr = [2, 3, 8, 9, 10, 1, 11, 28, 19, 41, 32];
@@ -172,12 +131,10 @@ arr.forEach(function(item, index) {
 });
 
 // 中序遍历
-midTraverse(ROOT);
+TREE_INORDER(ROOT);
 console.log('-------------------');
 
 // console.log(TREE_SUCCESSOR(nodes[19]).value)
 
 // TREE_DELETE(nodes[3]);
-// midTraverse(ROOT);
-
-// console.log(treeHeight(ROOT));
+// TREE_INORDER(ROOT);
