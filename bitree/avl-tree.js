@@ -11,6 +11,11 @@ function RChildHeight(node) {
     return node.right && node.right.height || 0;
 }
 
+/*
+ *  节点
+ *  
+ *  @note 此树不需要parent
+ */
 function Node(left, right, height, value) {
     if (!this instanceof Node) {
         return new Node(left, right, height, value);
