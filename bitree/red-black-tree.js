@@ -1,13 +1,7 @@
-/*
- *  红黑树
- * 
- *  此树的插入、删除与二叉查找树极相似，只不过多了一步修正
- * 
- * 
- */
 import { TREE_SUCCESSOR } from "../util/search";
-import { TREE_INORDER } from "../util/traverse";
+import { TREE_INORDER, TREE_BFS } from "../util/traverse";
 
+const NIL = { color: BLACK };
 const BLACK = "black";
 const RED = "red";
 
@@ -74,6 +68,8 @@ function RB_INSERT(root, value) {
         ROOT = new Node({ value, color: BLACK });;
         return;
     }
+    // TREE_BFS1(ROOT);
+    // console.log('----------------');
     let node = new Node({ value }),
         parent = null,
         current = root;
@@ -103,43 +99,54 @@ function RB_INSERT_FIXUP(root, node) {
     // 如果node.parent不存在，则认为node.parent是黑色
     while (node.parent && node.parent.color === RED) {
         if (node.parent.parent.left === node.parent) { // 这是父节点是左子树的情况
+            console.log("左树");
             let parent = node.parent,
                 uncle = parent.parent.right;
             // uncle如果不存在则认为是黑色
             if (uncle && uncle.color === RED) {
+                console.log("CASE 1");
                 parent.color = BLACK;
                 uncle.color = BLACK;
                 parent.parent.color = RED;
                 node = parent.parent;
             } else {
                 if (parent.right === node) { // CASE 2
-                    node = parent;
                     console.log("CASE2");
+                    node = parent;
                     RB_LROTATE(node);
-                    parent = node.parent;
                 }
                 // CASE 3 (可以由CASE2转换)
-                parent.color = BLACK;
-                parent.parent.color = RED;
-                RB_RROTATE(parent.parent);
+                node.parent.color = BLACK;
+                node.parent.parent.color = RED;
+                RB_RROTATE(node.parent.parent);
+                // 修正root指向
+                if (!node.parent.parent) {
+                    root = node.parent;
+                }
             }
         } else { // 这是父节点是右子树的情况
+            console.log("右树");
             let parent = node.parent,
                 uncle = parent.parent.left;
             if (uncle && uncle.color === RED) {
+                console.log("CASE1");
                 parent.parent.color = RED;
                 parent.color = uncle.color = BLACK;
                 node = parent.parent;
             } else {
                 if (parent.left === node) {
+                    console.log("CASE2");
                     node = parent;
                     RB_RROTATE(node);
-                    parent = node.parent;
                 }
-                parent.color = BLACK;
-                parent.parent.color = RED;
+                node.parent.color = BLACK;
+                node.parent.parent.color = RED;
                 console.log("CASE3");
-                RB_LROTATE(parent.parent);
+                RB_LROTATE(node.parent.parent);
+                // 修正root指向
+                if (!node.parent.parent) {
+                    root = node.parent;
+                }
             }
         }
     }
@@ -182,22 +189,86 @@ function RB_DELETE(root, node) {
     }
     return y;
 }
-/*
- *
- *  删除函数修正
- * 
- *  分四种情况：
- *      1. x的兄弟w是红色的；
- *      2. x的兄弟w是黑色的，而且w的两个孩子都是黑色的；
- *      3. x的兄弟w是黑色的，而且w的左孩子是红色的，右孩子是黑色的；
- *      4. x的兄弟w是黑色的，而且w的右孩子是红色的；
- */
-function RB_DELETE_FIXUP(root, x) {
 
+function RB_DELETE_FIXUP(root, x) {
+    while (x != ROOT && x.color === BLACK) {
+        console.log(x);
+        let parent = x.parent;
+        if (x.parent.left === x) { // 如果x是左子树
+            let sibling = parent.right;
+            // sibling 如果为红色，必须存在，因为如果sibling不存在说明它是黑色的
+            if (sibling && sibling.color === RED) { // CASE 1
+                parent.color = RED;
+                sibling.color = BLACK;
+                RB_LROTATE(parent);
+                sibling = parent.right;
+            }
+            // 因为子孙如果不存在，认为是黑色的
+            if ((!sibling.left || sibling.left.color === BLACK) &&
+                (!sibling.right || sibling.right.color === BLACK)) { // CASE 2
+                sibling.color = RED;
+                /*
+                 *  如果此时parent是红色的，那就可以直接停止循环，并把x涂为黑色；
+                 *  如果parent是黑色，那就继续循环；
+                 */
+                x = parent;
+            } else if (sibling && sibling.left.color === RED) { // CASE 3
+                sibling.left.color = BLACK;
+                sibling.color = RED;
+                RB_RROTATE(sibling);
+            } else { // CASE 4
+                sibling.color = parent.color;
+                parent.color = sibling.right.color = BLACK;
+                RB_LROTATE(parent);
+                // 已经操作完成，将ROOT赋值给x是为了停止循环
+                x = ROOT;
+            }
+        } else { // 如果x是右子树
+            let sibling = parent.left;
+            if (sibling && sibling.color === RED) {
+                parent.color = RED;
+                sibling.color = BLACK;
+                RB_RROTATE(parent);
+            } else {
+                if ((!sibling.left || sibling.left.color === BLACK) &&
+                    (!sibling.right || sibling.right.color === BLACK)) {
+                    sibling.color = RED;
+                    x = parent;
+                } else if (sibling.right && sibling.right.color === RED) {
+                    sibling.color = RED;
+                    sibling.right.color = BLACK;
+                    RB_LROTATE(sibling);
+                } else {
+                    sibling.color = parent.color;
+                    sibling.left.color = parent.color = BLACK;
+                    RB_RROTATE(parent);
+                    x = ROOT;
+                }
+            }
+        }
+    }
+    x.color = BLACK;
 }
 
-var arr = [10, 3, 9, 28, 14, 11, 100, 1, 15, 30, 2, 47, 0];
+function TREE_BFS1(node) {
+    if (!node) return;
+    let queue = [node],
+        current;
+    while (queue.length) {
+        current = queue.shift();
+        current.left && queue.push(current.left);
+        current.right && queue.push(current.right);
+        console.log(current.value, current.color);
+    }
+}
+
+// var arr = [27, 45, 78, 50, 35, 56, 90, 40, 48];
+var arr = [11, 2, 14, 1, 7, 5, 8, 4, 15];
 arr.forEach((value, index) => {
     RB_INSERT(ROOT, value);
-})
-TREE_INORDER(ROOT);
+});
+// TREE_INORDER(ROOT);
+TREE_BFS1(ROOT);
+console.log('----');
+RB_DELETE(ROOT, ROOT.left.right);
+TREE_BFS1(ROOT);
